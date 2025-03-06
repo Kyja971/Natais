@@ -1,0 +1,15 @@
+# Exclude globally env variables
+.env
+*.env
+node_modules
+entrypoint
+env
+dist
+
+# Keep Rabbitmq data folder but not content
+data
+!data/.gitkeep
+
+# Keep profile data folder but content
+profile_datas
+!profile_datas/.gitkeep
