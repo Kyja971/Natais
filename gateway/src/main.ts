@@ -1,8 +1,23 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  app.enableCors();
+  app.use(cookieParser());
+  
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errors) => {
+        Logger.log(errors);
+      },
+      skipNullProperties: true,
+      skipMissingProperties: true,
+      skipUndefinedProperties: true,
+    }),
+  );
+  await app.listen(3000);
 }
 bootstrap();
