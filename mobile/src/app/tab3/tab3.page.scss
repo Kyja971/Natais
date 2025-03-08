@@ -1,0 +1,117 @@
+app-show-one-auth{
+    width: 100%;
+    &:nth-child(odd){
+        --ion-item-background:#eee;
+    }
+}
+ion-content{
+    ion-button {
+        --background: #C0E863;
+        --border-radius: 6px;
+        --color: #000;
+        --box-shadow: none;
+        --padding-top: .5rem;
+        --padding-bottom: .5rem;
+        text-transform: none;
+        letter-spacing: normal;
+        margin-right: 10px;
+    }
+
+    .legend{
+        padding: 16px 16px 0 16px;
+        ion-col{
+            padding-left: 0;
+            padding-right: 0;
+        }
+    
+        ion-checkbox{
+            --checkmark-color: transparent;
+        }
+    
+        ion-checkbox::part(container) {
+            position: absolute;
+            left: -10px;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            border: none;
+        }
+    }
+    
+    .tous span, .super_admin span, .admin span, .production span, .qualité span {
+        width: 100%;
+        height: 100%;
+        display: inline-block;
+        padding: .2rem .5rem;
+        border-radius: 6px;
+    }
+    
+    .tous{
+        color: gray;//
+        span{
+            background-color: #eee;
+            border: 1px solid #eee;
+        }
+    }
+    
+    .tous.checkbox-checked span{
+        border: 1px solid gray;
+    }
+    
+    .super_admin span{
+        background-color: #B6FBAD;
+        border: 1px solid #B6FBAD;
+        color: #3b7334;
+    }
+    
+    .super_admin.checkbox-checked span{
+        border: 1px solid #6cab64;
+    }
+    .admin span{
+        background-color: #B5E7FF;
+        border: 1px solid #B5E7FF;
+        color: #385d6e;
+    }
+    .admin.checkbox-checked span{
+        border: 1px solid #385d6e;
+    }
+    
+    .production span{
+        background-color: #D6CAFF;
+        border: 1px solid #D6CAFF;
+        color: #504379;
+    }
+    .production.checkbox-checked span{
+        border: 1px solid #504379;
+    }
+
+    .qualité span{
+        background-color: #c59315;
+        border: 1px solid #D6CAFF;
+        color: #504379;
+    }
+    .qualité.checkbox-checked span{
+        border: 1px solid #504379;
+    }
+    
+    ion-list{
+        margin-top: 0 !important;
+    }
+
+    .actionBar{
+        position: fixed;
+        right: 0;
+        bottom: 0;
+
+        ion-button{
+            --border-radius: 100%;
+            width: 50px;
+            height: 50px;
+            .add{
+                font-size: 2rem;
+                margin-left: -5px;
+            }
+        }
+    }
+}

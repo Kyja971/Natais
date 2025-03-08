@@ -1,0 +1,177 @@
+<ion-content class="ion-padding">
+  <form [formGroup]="newOf">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Début production</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-accordion-group>
+          <ion-accordion *ngFor="let control of debutProduction.controls; let i = index"
+            [formGroup]="getFormGroup(control)">
+            <ion-item slot="header">
+              <ion-label>Début production {{ i + 1 }}</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-item>
+                <ion-label position="floating">Heure</ion-label>
+                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(debutProduction, i, 'heure')"></ion-input>
+
+              </ion-item>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="4"></ion-col>
+                  <ion-col size="4" class="ion-align-self-center">
+                    <ion-label>Conforme</ion-label>
+                  </ion-col>
+                  <ion-col size="4" class="ion-align-self-center">
+                    <ion-label>Non Conforme</ion-label>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="4">
+                    <ion-item>
+                      <ion-label>Matériel</ion-label>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="4" class="ion-text-center">
+                    <ion-checkbox formControlName="conforme"
+                      (ionChange)="onCheckboxChange(i, 'conforme')"></ion-checkbox>
+                  </ion-col>
+                  <ion-col size="4" class="ion-text-center">
+                    <ion-checkbox formControlName="nonconforme"
+                      (ionChange)="onCheckboxChange(i, 'nonconforme')"></ion-checkbox>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              <ion-item *ngIf="getFormGroup(control).get('nonconforme')?.value">
+                <ion-label position="floating">Commentaires</ion-label>
+                <ion-textarea formControlName="commentaires"></ion-textarea>
+              </ion-item>
+              <ion-button expand="full" color="success" (click)="validateDebutProduction(i)">Valider</ion-button>
+              <ion-button (click)="removeDebutProduction(i)" color="danger">Supprimer</ion-button>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+        <!-- Bouton Ajouter doit être bien en dehors de la boucle *ngFor pour rester visible -->
+        <ion-button (click)="addDebutProduction()" color="primary">Ajouter</ion-button>
+      </ion-card-content>
+    </ion-card>
+
+
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Contrôle horaire</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Heure</ion-label>
+          <ion-input formControlName="heure" ></ion-input>
+
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Valeur</ion-label>
+          <ion-input formControlName="controleHoraireValeur"></ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Contrôles toutes les 4h</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-accordion-group>
+          <ion-accordion *ngFor="let control of controle4h.controls; let i = index" [formGroup]="getFormGroup(control)">
+            <ion-item slot="header">
+              <ion-label>Contrôle {{ i + 1 }}</ion-label>
+            </ion-item>
+            <div slot="content">
+              <!-- Sous-accordéon pour Contrôle de métaux et Éjection sous poids -->
+              <ion-accordion-group>
+                <ion-accordion>
+                  <ion-item slot="header">
+                    <ion-label>Métaux & Éjection sous poids</ion-label>
+                  </ion-item>
+                  <div slot="content">
+                    <ion-item>
+                      <ion-input formControlName="heureMetauxEjection" placeholder="Heure" (ionBlur)="checkTimeFormat(controle4h, i, 'heureMetauxEjection')"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-input formControlName="controleMetaux" placeholder="première valeure"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-input formControlName="controleMetaux2" placeholder="dernière valeure"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-input formControlName="ejectionSousPoids" placeholder="Ejection sous poids"></ion-input>
+                    </ion-item>
+                    <ion-button expand="full" color="success" (click)="validateControleMetauxEjection(i)">Valider</ion-button>
+                  </div>
+                </ion-accordion>
+    
+                <!-- Sous-accordéon pour Étalonnage et Éclatement -->
+                <ion-accordion>
+                  <ion-item slot="header">
+                    <ion-label>Étalonnage & Éclatement</ion-label>
+                  </ion-item>
+                  <div slot="content">
+                    <ion-item>
+                      <ion-label position="floating">Heure</ion-label>
+                      <ion-input formControlName="heureEtalonnageEclatement"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label position="floating">Résultat Étalonnage</ion-label>
+                      <ion-input formControlName="etalonnage"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label position="floating">Résultat Éclatement</ion-label>
+                      <ion-input formControlName="eclatement"></ion-input>
+                    </ion-item>
+                    <ion-button expand="full" color="success" (click)="validateEtalonnageEclatement(i)">Valider</ion-button>
+                  </div>
+                </ion-accordion>
+              </ion-accordion-group>
+    
+              <!-- Bouton validation complète -->
+              <ion-button expand="full" color="tertiary" (click)="validateControle4h(i)">Valider ce bloc</ion-button>
+              <ion-button (click)="removeControle4h(i)" color="danger">Supprimer</ion-button>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+        <ion-button (click)="addControle4h()" color="primary">Ajouter</ion-button>
+      </ion-card-content>
+    </ion-card>
+
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Étalonnage</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Date</ion-label>
+          <ion-datetime formControlName="etalonnageDate"></ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Résultat</ion-label>
+          <ion-input formControlName="etalonnageResultat"></ion-input>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Fin de poste</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Commentaires</ion-label>
+          <ion-textarea formControlName="finDePosteCommentaires"></ion-textarea>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-button (click)="onSubmit()" expand="full">Soumettre</ion-button>
+  </form>
+</ion-content>

@@ -13,5 +13,9 @@ data
 # Keep profile data folder but content
 profile_datas
 !profile_datas/.gitkeep
+
+profilenatais_datas
+!profilenatais_datas/.gitkeep
+
 production_datas
 !production_datas/.gitkeep

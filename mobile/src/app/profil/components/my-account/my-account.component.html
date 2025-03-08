@@ -1,0 +1,18 @@
+<ion-content [fullscreen]="true">
+
+  <ion-row>
+    <ion-col class="ion-text-center">
+      <img alt="Profile Picture" class="avatar" src="https://avatar.iran.liara.run/public"/>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col class="ion-text-center identity">
+      <h2>{{ profile.lastname }} {{ profile.firstname }}</h2>
+      <p> {{ profile.gender }}</p>
+      <p> {{ profile.email }}</p>
+      <p> {{ profile.phonenumber }}</p>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

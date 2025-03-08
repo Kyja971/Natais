@@ -4,7 +4,7 @@ import { ProfileDto } from './dto/profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { Observable, take } from 'rxjs';
 
-@Controller('profile')
+@Controller('profile_natais')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 

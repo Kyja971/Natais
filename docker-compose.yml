@@ -1,93 +1,97 @@
-services: 
-    auth: 
-        container_name: auth
-        restart: on-failure
-        build: 
-            context: .
-            dockerfile: ./.docker/auth/Dockerfile
-        volumes:
-            - ./microservices/auth:/usr/src/app
-        ports: 
-            - 5001:5001
-        command: npm run start:dev
-        networks:
-            - natais-network
-        depends_on:
-            - auth-db
-    auth-db: 
-        image: mariadb:latest
-        container_name: auth-db
-        ports: 
-            - 3307:3306
-        env_file:
-            - auth.env
+services:
+  auth:
+    container_name: auth
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: ./.docker/auth/Dockerfile
+    volumes:
+      - ./microservices/auth:/usr/src/app
+    ports:
+      - 5001:5001
+    command: npm run start:dev
+    networks:
+      - natais-network
+    depends_on:
+      - auth-db
+  auth-db:
+    image: mariadb:latest
+    container_name: auth-db
+    ports:
+      - 3307:3306
+    env_file:
+      - auth.env
 
-    profile: 
-        container_name: profile
-        restart: on-failure
-        build: 
-            context: .
-            dockerfile: ./.docker/profile/Dockerfile
-        volumes:
-            - ./microservices/profile:/usr/src/app
-        ports: 
-            - 5003:5003
-        command: npm run start:dev
-        networks:
-            - natais-network
-        depends_on:
-            - profile-db
-    profile-db: 
-        image: mongo:latest
-        container_name: profile-db
-        restart: unless-stopped
-        ports: 
-            - 27018:27017
-        env_file: profile.env
-        volumes: 
-            - ./profile_datas:/data/db
-            - ./entrypoint/profile/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    production: 
-        container_name: production
-        restart: on-failure
-        build: 
-            context: .
-            dockerfile: ./.docker/production/Dockerfile
-        volumes:
-            - ./microservices/production:/usr/src/app
-        ports: 
-            - 5004:5004
-        command: npm run start:dev
-        networks:
-            - natais-network
-        depends_on:
-            - production-db
-    production-db: 
-        image: mongo:latest
-        container_name: production-db
-        restart: unless-stopped
-        ports: 
-            - 27019:27017
-        env_file: production.env
-        volumes: 
-            - ./production_datas:/data/db
-            - ./entrypoint/production/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-    rabbitmq: 
-        image: rabbitmq:3.9-management
-        container_name: rabbitmq
-        restart: unless-stopped
-        hostname: rabbitmq
-        ports: 
-            - 5672:5672
-            - 15672:15672
-        volumes: 
-            - ./data:/var/lib/rabbitmq
-        networks:
-            - natais-network
+  profilenatais:
+    container_name: profilenatais
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: ./.docker/profilenatais/Dockerfile
+    volumes:
+      - ./microservices/profilenatais:/usr/src/app
+    ports:
+      - 5003:5003
+    command: npm run start:dev
+    networks:
+      - natais-network
+    depends_on:
+      - profilenatais-db
+  profilenatais-db:
+    image: mongo:latest
+    container_name: profilenatais-db
+    restart: unless-stopped
+    ports:
+      - 27019:27017
+    env_file: profile.env
+    volumes:
+      - ./profilenatais_datas:/data/db
+      - ./entrypoint/profilenatais/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  production:
+    container_name: production
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: ./.docker/production/Dockerfile
+    volumes:
+      - ./microservices/production:/usr/src/app
+    ports:
+      - 5004:5004
+    command: npm run start:dev
+    networks:
+      - natais-network
+    depends_on:
+      - production-db
+  production-db:
+    image: mongo:latest
+    container_name: production-db
+    restart: unless-stopped
+    ports:
+      - 27020:27017
+    env_file: production.env
+    volumes:
+      - ./production_datas:/data/db
+      - ./entrypoint/production/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq
+    restart: unless-stopped
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./data:/var/lib/rabbitmq
+    networks:
+      - natais-network
+
 volumes:
-    data: 
-    profile_datas: 
-    production_datas:
+  data:
+  profilenatais_datas:
+  production_datas:
+
 networks:
-    natais-network: 
-        driver: bridge
+  natais-network:
+    driver: bridge

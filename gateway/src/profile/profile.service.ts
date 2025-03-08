@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class ProfileService {
-  constructor(@Inject('PROFILE') private _client: ClientProxy
+  constructor(@Inject('PROFILE_NATAIS') private _client: ClientProxy
 ) { }
 
   add(profile: ProfileDto): Observable<ProfileDto> {

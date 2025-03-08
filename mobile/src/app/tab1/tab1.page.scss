@@ -1,0 +1,24 @@
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+  
+    ion-button {
+      margin: 0 10px;
+      font-size: 16px;
+  
+      &[color="primary"] {
+        --background: #3880ff; // Couleur primaire (bleu)
+        --background-activated: #2864e0;
+        --background-focused: #2864e0;
+        --background-hover: #2864e0;
+      }
+  
+      &[color="secondary"] {
+        --background: #3dc2ff; // Couleur secondaire (cyan)
+        --background-activated: #2eb2e0;
+        --background-focused: #2eb2e0;
+        --background-hover: #2eb2e0;
+      }
+    }
+  }

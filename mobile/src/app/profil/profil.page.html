@@ -1,0 +1,42 @@
+<app-header></app-header>
+
+<ion-content [fullscreen]="true">
+  <ion-row class="illustration-content">
+    <ion-col>
+      <ion-img src="" alt="logo" class="illustration"></ion-img>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <ion-col>
+      <ion-list [inset]="true" class="customList">
+        <ion-item (click)="goMyProfile()">
+          <ion-icon name="person-outline" slot="start" ></ion-icon>
+          <ion-label>Mon compte</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="notifications-outline" slot="start"></ion-icon>
+          <ion-label>Notifications</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="help-circle-outline" slot="start"></ion-icon>
+          <ion-label>Aide</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="bulb-outline" slot="start"></ion-icon>
+          <ion-label>Suggestions</ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-label>Contacts</ion-label>
+        </ion-item>
+      </ion-list>
+
+      <app-logout></app-logout>
+
+    </ion-col>
+  </ion-row>
+</ion-content>

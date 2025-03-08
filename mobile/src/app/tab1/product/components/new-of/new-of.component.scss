@@ -1,0 +1,43 @@
+ion-grid {
+    --ion-grid-padding: 10px; // Ajoute un espacement général
+  
+    ion-row {
+      --ion-grid-row-padding: 5px 0; // Ajoute un espacement vertical entre les lignes
+    }
+  
+    ion-col {
+      padding: 5px; // Ajoute un espacement interne aux colonnes
+  
+      &.ion-align-self-center {
+        display: flex;
+        align-items: center;
+        justify-content: center; // Centre horizontalement le contenu
+        label {
+          margin: 0; // Supprime les marges par défaut des labels
+        }
+      }
+  
+      &.ion-text-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+  
+      ion-item {
+        --ion-item-background: var(--ion-color-light); // Ajoute un fond clair aux items
+        --ion-item-border-color: var(--ion-color-medium); // Ajoute une bordure légère
+        --ion-item-padding-start: 10px;
+        --ion-item-padding-end: 10px;
+        --ion-item-padding-top: 5px;
+        --ion-item-padding-bottom: 5px;
+        margin: 5px 0; // Ajoute un espacement entre les items
+      }
+  
+      ion-checkbox {
+        --size: 24px; // Augmente la taille des checkboxes
+        --checkmark-width: 3px; // Épaissit la coche
+        --background-checked: var(--ion-color-primary); // Change la couleur de fond quand coché
+        --border-color-checked: var(--ion-color-primary); // Change la couleur de bordure quand coché
+      }
+    }
+  }

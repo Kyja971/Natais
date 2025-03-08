@@ -15,7 +15,7 @@ import { lastValueFrom } from 'rxjs';
 export class AppService {
   constructor(
     @InjectRepository(AuthEntity) private _repository: Repository<AuthEntity>,
-    @Inject('PROFILE') private _client: ClientProxy,
+    @Inject('PROFILE_NATAIS') private _client: ClientProxy,
     private jwt: JwtService
   ) { }
 

@@ -1,0 +1,22 @@
+<ion-row>
+  <ion-col>
+    <ion-img src="" alt="login" class="login"></ion-img>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <ion-list lines="none">
+        <ion-item>
+          <ion-label position="stacked">Identifiant</ion-label>
+          <ion-input class="custom" formControlName="login" placeholder="Veuillez saisir votre mail"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Mot de passe</ion-label>
+          <ion-input  class="custom-password" type="password" formControlName="password" placeholder="Veuillez saisir votre mot de passe">
+            <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+          </ion-input>
+        </ion-item>
+      </ion-list>
+    
+      <ion-button type="submit" [disabled]="form.invalid" expand="block">Se connecter</ion-button>
+    </form>
+  </ion-col>
+</ion-row>

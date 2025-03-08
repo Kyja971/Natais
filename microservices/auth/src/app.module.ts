@@ -37,11 +37,11 @@ const envfile = 'env/' + process.env.NEST_ENV;
     }),
     ClientsModule.register([
       {
-        name: 'PROFILE',
+        name: 'PROFILE_NATAIS',
         transport: Transport.RMQ,
         options: {
           urls:['amqp://localhost:5672'],
-          queue: 'profile_queue',
+          queue: 'profile_natais_queue',
           queueOptions: {
             durable: false
           },

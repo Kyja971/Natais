@@ -6,6 +6,14 @@ const routes: Routes = [
   {
     path: '',
     component: Tab1Page,
+  },
+  {
+    path: 'product',
+    loadChildren: () => import('./product/product.module').then( m => m.ProductPageModule)
+  },
+  {
+    path: 'quality',
+    loadChildren: () => import('./quality/quality.module').then( m => m.QualityPageModule)
   }
 ];
 
