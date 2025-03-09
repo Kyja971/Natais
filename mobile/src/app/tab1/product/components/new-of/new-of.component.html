@@ -14,7 +14,7 @@
             <div slot="content">
               <ion-item>
                 <ion-label position="floating">Heure</ion-label>
-                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(debutProduction, i, 'heure')"></ion-input>
+                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(debutProduction, i, 'heure')" type="time"></ion-input>
 
               </ion-item>
               <ion-grid>
@@ -35,11 +35,12 @@
                   </ion-col>
                   <ion-col size="4" class="ion-text-center">
                     <ion-checkbox formControlName="conforme"
-                      (ionChange)="onCheckboxChange(i, 'conforme')"></ion-checkbox>
+                      (ionChange)="onCheckboxChangeGeneric(debutProduction,i, 'conforme', 'nonconforme', 'commentaires')"
+                      e></ion-checkbox>
                   </ion-col>
                   <ion-col size="4" class="ion-text-center">
                     <ion-checkbox formControlName="nonconforme"
-                      (ionChange)="onCheckboxChange(i, 'nonconforme')"></ion-checkbox>
+                      (ionChange)="onCheckboxChangeGeneric(debutProduction,i, 'conforme', 'nonconforme', 'commentaires')"></ion-checkbox>
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -64,15 +65,55 @@
         <ion-card-title>Contrôle horaire</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label position="floating">Heure</ion-label>
-          <ion-input formControlName="heure" ></ion-input>
-
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Valeur</ion-label>
-          <ion-input formControlName="controleHoraireValeur"></ion-input>
-        </ion-item>
+        <ion-accordion-group>
+          <ion-accordion *ngFor="let control of controleHoraire.controls; let i = index"
+            [formGroup]="getFormGroup(control)">
+            <ion-item slot="header">
+              <ion-label>Controle horaire {{ i + 1 }}</ion-label>
+            </ion-item>
+            <div slot="content">
+         
+              <ion-item>
+                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(controleHoraire, i, 'heure')" placeholder="heure" type="time"></ion-input>
+              </ion-item>
+          
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="4"></ion-col>
+                  <ion-col size="4" class="ion-align-self-center">
+                    <ion-label>Conforme</ion-label>
+                  </ion-col>
+                  <ion-col size="4" class="ion-align-self-center">
+                    <ion-label>Non Conforme</ion-label>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="4">
+                    <ion-item>
+                      <ion-label>Matériel</ion-label>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="4" class="ion-text-center">
+                    <ion-checkbox formControlName="conformeHoraire"
+                      (ionChange)="onCheckboxChangeGeneric(controleHoraire,i, 'conformeHoraire', 'nonconformeHoraire', 'commentsHoraire')"
+                      e></ion-checkbox>
+                  </ion-col>
+                  <ion-col size="4" class="ion-text-center">
+                    <ion-checkbox formControlName="nonconformeHoraire"
+                      (ionChange)="onCheckboxChangeGeneric(controleHoraire,i, 'conformeHoraire', 'nonconformeHoraire', 'commentsHoraire')"></ion-checkbox>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              <ion-item *ngIf="getFormGroup(control).get('nonconformeHoraire')?.value">
+                <ion-label position="floating">Commentaires</ion-label>
+                <ion-textarea formControlName="commentsHoraire"></ion-textarea>
+              </ion-item>
+              <ion-button expand="full" color="success" (click)="validateControlHoraire(i)">Valider</ion-button>
+              <ion-button (click)="removeControlHoraire(i)" color="danger">Supprimer</ion-button>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+        <ion-button (click)="addControleHoraire()" color="primary">Ajouter</ion-button>
       </ion-card-content>
     </ion-card>
 
@@ -91,11 +132,12 @@
               <ion-accordion-group>
                 <ion-accordion>
                   <ion-item slot="header">
-                    <ion-label>Métaux & Éjection sous poids</ion-label>
+                    <ion-label>Métaux</ion-label>
                   </ion-item>
                   <div slot="content">
                     <ion-item>
-                      <ion-input formControlName="heureMetauxEjection" placeholder="Heure" (ionBlur)="checkTimeFormat(controle4h, i, 'heureMetauxEjection')"></ion-input>
+                      <ion-input formControlName="heureMetaux" placeholder="Heure"
+                        (ionBlur)="checkTimeFormat(controle4h, i, 'heureMetaux')" type="time"></ion-input>
                     </ion-item>
                     <ion-item>
                       <ion-input formControlName="controleMetaux" placeholder="première valeure"></ion-input>
@@ -103,36 +145,251 @@
                     <ion-item>
                       <ion-input formControlName="controleMetaux2" placeholder="dernière valeure"></ion-input>
                     </ion-item>
-                    <ion-item>
-                      <ion-input formControlName="ejectionSousPoids" placeholder="Ejection sous poids"></ion-input>
-                    </ion-item>
-                    <ion-button expand="full" color="success" (click)="validateControleMetauxEjection(i)">Valider</ion-button>
+
+                    <ion-button expand="full" color="success" (click)="validateControleMetaux(i)">Valider</ion-button>
                   </div>
                 </ion-accordion>
-    
-                <!-- Sous-accordéon pour Étalonnage et Éclatement -->
+
                 <ion-accordion>
                   <ion-item slot="header">
-                    <ion-label>Étalonnage & Éclatement</ion-label>
+                    <ion-label>Éjection sous poids</ion-label>
                   </ion-item>
                   <div slot="content">
                     <ion-item>
-                      <ion-label position="floating">Heure</ion-label>
-                      <ion-input formControlName="heureEtalonnageEclatement"></ion-input>
+                      <ion-input formControlName="heureEjection" placeholder="Heure"
+                        (ionBlur)="checkTimeFormat(controle4h, i, 'heureEjection')" type="time"></ion-input>
                     </ion-item>
-                    <ion-item>
-                      <ion-label position="floating">Résultat Étalonnage</ion-label>
-                      <ion-input formControlName="etalonnage"></ion-input>
+
+                    <ion-grid>
+                      <ion-row>
+                        <ion-col size="4"></ion-col>
+                        <ion-col size="4" class="ion-align-self-center">
+                          <ion-label>Conforme</ion-label>
+                        </ion-col>
+                        <ion-col size="4" class="ion-align-self-center">
+                          <ion-label>Non Conforme</ion-label>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="4">
+                          <ion-item>
+                            <ion-label>Ejection</ion-label>
+                          </ion-item>
+                        </ion-col>
+                        <ion-col size="4" class="ion-text-center">
+                          <ion-checkbox formControlName="ejectionConforme"
+                            (ionChange)="onCheckboxChangeGeneric(controle4h,i, 'ejectionConforme', 'ejectionNonConforme', 'commentaires')"
+                            e></ion-checkbox>
+                        </ion-col>
+                        <ion-col size="4" class="ion-text-center">
+                          <ion-checkbox formControlName="ejectionNonConforme"
+                            (ionChange)="onCheckboxChangeGeneric(controle4h,i, 'ejectionConforme', 'ejectionNonConforme', 'commentaires')"></ion-checkbox>
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                    <ion-item *ngIf="getFormGroup(control).get('ejectionNonConforme')?.value">
+                      <ion-label position="floating">Commentaires</ion-label>
+                      <ion-textarea formControlName="commentEjecNonConforme"></ion-textarea>
                     </ion-item>
-                    <ion-item>
-                      <ion-label position="floating">Résultat Éclatement</ion-label>
-                      <ion-input formControlName="eclatement"></ion-input>
-                    </ion-item>
-                    <ion-button expand="full" color="success" (click)="validateEtalonnageEclatement(i)">Valider</ion-button>
+
+                    <ion-button expand="full" color="success" (click)="validateControleEjection(i)">Valider</ion-button>
                   </div>
                 </ion-accordion>
+
+                <!-- Sous-accordéon pour Étalonnage -->
+                <ion-accordion>
+                  <ion-item slot="header">
+                    <ion-label>Étalonnage</ion-label>
+                  </ion-item>
+                  <div slot="content">
+                    <ion-item>
+                      <ion-input formControlName="heureEtalonnage" placeholder="Heure contrôle"
+                        (ionBlur)="checkTimeFormat(controle4h, i, 'heureEtalonnage')" type="time"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-input formControlName="EtalonnageMais" placeholder="Dosage Maïs"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-input formControlName="EtalonnageHuile" placeholder="Dosage huile"></ion-input>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-label>Production avec poudre ?</ion-label>
+                      <ion-toggle formControlName="prodAvecPoudre"></ion-toggle>
+                    </ion-item>
+
+                    <!-- Conteneur pour les deux grids -->
+                    <div *ngIf="shouldShowGrid(i)" class="grid-container">
+                      <!-- Première grille -->
+                      <ion-grid formArrayName="peseeMais_">
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell"></ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Pesées Maïs</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Conforme</ion-label>
+                          </ion-col>
+                        </ion-row>
+                        <!-- nom des colonnes -->
+                        <ion-row *ngFor="let row of generateRows(); let rowIndex = index; trackBy: trackByFn">
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                              <ion-label>Pesée {{ rowIndex + 1 }}</ion-label>
+                            </ion-item>
+                          </ion-col>
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                              <ion-input [formControlName]="rowIndex" placeholder="Valeur" inputmode="decimal"
+                                type="number" value="0.00"></ion-input>
+
+                            </ion-item>
+                          </ion-col>
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                            </ion-item>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+
+                      <!-- Deuxième grid -->
+                      <ion-grid formArrayName="peseeHuile_">
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell"></ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Pesées Huile</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Conforme</ion-label>
+                          </ion-col>
+                        </ion-row>
+                        <ion-row *ngFor="let row of generateRows(); let rowIndex = index; trackBy: trackByFn">
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                              <ion-label>Pesée {{ rowIndex + 1 }}</ion-label>
+                            </ion-item>
+                          </ion-col>
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                              <ion-input [formControlName]="rowIndex" placeholder="valeur" type="number"
+                                value="0.00"></ion-input>
+                            </ion-item>
+                          </ion-col>
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                            </ion-item>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </div>
+
+                    <!-- Grid pour poudre (s'affiche si "Oui" est sélectionné) -->
+                    <div *ngIf="controle4h.at(i).get('prodAvecPoudre')?.value" class="grid-container">
+                      <ion-item>
+                        <ion-input formControlName="EtalonnagePoudre" placeholder="Dosage Poudre"></ion-input>
+                      </ion-item>
+                      <ion-grid formArrayName="peseePoudre_">
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell"></ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Pesées Poudre</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Conforme</ion-label>
+                          </ion-col>
+                        </ion-row>
+
+                        <ion-row *ngFor="let row of generateRows(); let rowIndex = index; trackBy: trackByFn">
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                              <ion-label>Pesée {{ rowIndex + 1 }}</ion-label>
+                            </ion-item>
+                          </ion-col>
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                              <ion-input [formControlName]="rowIndex" placeholder="Valeur" inputmode="decimal"
+                                type="number" value="0.00"></ion-input>
+                            </ion-item>
+                          </ion-col>
+                          <ion-col class="grid-cell">
+                            <ion-item lines="none" class="grid-item">
+                              <!-- Ajoute ici la logique pour le champ "Conforme" si nécessaire -->
+                            </ion-item>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </div>
+
+                    <ion-button expand="full" color="success" (click)="validateEtalonnage(i)">Valider</ion-button>
+                  </div>
+                </ion-accordion>
+
+                <!-- Sous-accordéon pour Eclatement -->
+                <ion-accordion>
+                  <ion-item slot="header">
+                    <ion-label>Éclatement</ion-label>
+                  </ion-item>
+                  <div slot="content">
+                    <div>
+                      <ion-grid>
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell"></ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Entre 48 et 57gr</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Entre 58 et 80gr</ion-label>
+                          </ion-col>
+                        </ion-row>
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell">Volume</ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>1600</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>2000</ion-label>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </div>
+                    <ion-grid>
+                      <ion-row>
+                        <ion-col>Heure</ion-col>
+                        <ion-col>
+                          <ion-label>Volume</ion-label>
+                        </ion-col>
+                        <ion-col>
+                          <ion-label>Pesées Maïs non éclatés</ion-label>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col>
+                          <ion-item lines="none" class="grid-item">
+                            <ion-input formControlName="heureEclatement" placeholder="Heure"
+                            (ionBlur)="checkTimeFormat(controle4h, i, 'heureEclatement')" type="time"></ion-input>
+                          </ion-item>
+                        </ion-col>
+                        <ion-col>
+                          <ion-item lines="none" class="grid-item">
+                            <ion-input formControlName="volumeEclatement" placeholder="Mesure"
+                              type="number"></ion-input>
+                          </ion-item>
+                        </ion-col>
+                        <ion-col>
+                          <ion-item lines="none" class="grid-item">
+                            <ion-input formControlName="maisNonEclates" placeholder="Poids" type="number"></ion-input>
+                          </ion-item>
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+
+                    <ion-button expand="full" color="success" (click)="validateEclatement(i)">Valider</ion-button>
+                  </div>
+                </ion-accordion>
+
+
               </ion-accordion-group>
-    
+
               <!-- Bouton validation complète -->
               <ion-button expand="full" color="tertiary" (click)="validateControle4h(i)">Valider ce bloc</ion-button>
               <ion-button (click)="removeControle4h(i)" color="danger">Supprimer</ion-button>
@@ -146,29 +403,59 @@
 
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Étalonnage</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-item>
-          <ion-label position="floating">Date</ion-label>
-          <ion-datetime formControlName="etalonnageDate"></ion-datetime>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating">Résultat</ion-label>
-          <ion-input formControlName="etalonnageResultat"></ion-input>
-        </ion-item>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card>
-      <ion-card-header>
         <ion-card-title>Fin de poste</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-item>
-          <ion-label position="floating">Commentaires</ion-label>
-          <ion-textarea formControlName="finDePosteCommentaires"></ion-textarea>
-        </ion-item>
+        <ion-accordion-group>
+          <ion-accordion *ngFor="let control of finPoste.controls; let i = index"
+            [formGroup]="getFormGroup(control)">
+            <ion-item slot="header">
+              <ion-label>Fin de poste {{ i + 1 }}</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-item>
+                <ion-label position="floating">Heure</ion-label>
+                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(finPoste, i, 'heure')" type="time"></ion-input>
+
+              </ion-item>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="4"></ion-col>
+                  <ion-col size="4" class="ion-align-self-center">
+                    <ion-label>Conforme</ion-label>
+                  </ion-col>
+                  <ion-col size="4" class="ion-align-self-center">
+                    <ion-label>Non Conforme</ion-label>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="4">
+                    <ion-item>
+                      <ion-label>Matériel</ion-label>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="4" class="ion-text-center">
+                    <ion-checkbox formControlName="conformeMaterielFin"
+                      (ionChange)="onCheckboxChangeGeneric(finPoste,i, 'conformeMaterielFin', 'nonconformeMaterielFin', 'commentsMaterielFin')"
+                      e></ion-checkbox>
+                  </ion-col>
+                  <ion-col size="4" class="ion-text-center">
+                    <ion-checkbox formControlName="nonconformeMaterielFin"
+                      (ionChange)="onCheckboxChangeGeneric(finPoste,i, 'conformeMaterielFin', 'nonconformeMaterielFin', 'commentsMaterielFin')"></ion-checkbox>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              <ion-item *ngIf="getFormGroup(control).get('nonconformeMaterielFin')?.value">
+                <ion-label position="floating">Commentaires</ion-label>
+                <ion-textarea formControlName="commentsMaterielFin"></ion-textarea>
+              </ion-item>
+              <ion-button expand="full" color="success" (click)="validateFinPoste(i)">Valider</ion-button>
+              <ion-button (click)="removeFinPoste(i)" color="danger">Supprimer</ion-button>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+        <!-- Bouton Ajouter doit être bien en dehors de la boucle *ngFor pour rester visible -->
+        <ion-button (click)="addFinPoste()" color="primary">Ajouter</ion-button>
       </ion-card-content>
     </ion-card>
 

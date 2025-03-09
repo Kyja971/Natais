@@ -61,12 +61,14 @@ export class AppService {
   }
 
   async login(body: AuthBodyType): Promise<TokenType | undefined> {
+    
     // Check if the mail is present in the database
     return this._repository.findOne({ where: { email: body.email } })
       .then(async (user: AuthEntity) => {
+        console.log('voici pwd', user)
         // Compare the entered password to the database one
         const pwd = await comparePaswrd(body.password, user.password);
-
+        console.log('voici pwd', pwd)
         if (pwd) {
           // If both passwords are the same then we can build the payload 
           let pattern = { cmd: 'findOneByMail' };
@@ -79,7 +81,7 @@ export class AppService {
               role : user?.role,
               profileId: author
             };
-
+            
             // Then we build and return a jwt token from the payload
             return {
               token: await this.jwt.signAsync(payload),
