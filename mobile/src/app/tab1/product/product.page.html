@@ -4,5 +4,11 @@
   <div class="button-container">
     <ion-button color="primary" (click)="onAddOf()">Saisir un OF</ion-button>
   </div>
+
+  <ng-container *ngFor="let productOf of productOfs; let i = index" >
+    <app-header-product-of [productOf]="productOf" [num]="i" [id]="productOf.id"> 
+        <ion-content><ion-list></ion-list></ion-content>
+    </app-header-product-of>
+  </ng-container>
 </ion-content>
 

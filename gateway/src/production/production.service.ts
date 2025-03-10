@@ -1,27 +1,28 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ProductionDto } from './dto/production.dto';
+
 import { UpdateProductionDto } from './dto/update-production.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
+import { ProdOfDto } from './dto/production.dto';
 
 @Injectable()
 export class ProductionService {
   constructor(@Inject('PRODUCTION') private _client: ClientProxy
 ) { }
 
-  add(production: ProductionDto): Observable<ProductionDto> {
-    const pattern: any = { cmd: 'addProduction'};
-    return this._client.send<ProductionDto>(pattern, production)
+  add(production: ProdOfDto): Observable<ProdOfDto> {
+    const pattern: any = { cmd: 'addProductOf'};
+    return this._client.send<ProdOfDto>(pattern, production)
   }
 
-  findAll(): Observable<Array<ProductionDto>> {
-    const pattern: any = { cmd: 'findAllProduction'};
-    return this._client.send<ProductionDto[]>(pattern, {})
+  findAll(): Observable<Array<ProdOfDto>> {
+    const pattern: any = { cmd: 'findAllProductOf'};
+    return this._client.send<ProdOfDto[]>(pattern, {})
   }
 
-  findOne(id: string): Observable<ProductionDto> {
+  findOne(id: string): Observable<ProdOfDto> {
     const pattern: any = { cmd: 'findOneProduction'};
-    return this._client.send<ProductionDto>(pattern, id)
+    return this._client.send<ProdOfDto>(pattern, id)
   }
 
   update(id: string, updateProduction: UpdateProductionDto): Observable<UpdateProductionDto> {
@@ -32,6 +33,6 @@ export class ProductionService {
 
   delete(id: string) {
     const pattern: any = { cmd: 'deleteProduction'};
-    return this._client.send<ProductionDto>(pattern, id)
+    return this._client.send<ProdOfDto>(pattern, id)
   }
 }

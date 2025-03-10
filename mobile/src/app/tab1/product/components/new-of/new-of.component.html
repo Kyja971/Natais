@@ -1,5 +1,32 @@
 <ion-content class="ion-padding">
+
   <form [formGroup]="newOf">
+    <ion-card>
+    <ion-item>
+
+      <ion-input type="text" formControlName="numeroOf" placeholder="Numéro OF"></ion-input>
+    </ion-item>
+  
+    <ion-item>
+ 
+      <ion-input type="text" formControlName="numeroLot" placeholder="Numéro Lot"></ion-input>
+    </ion-item>
+  
+    <ion-item>
+
+      <ion-input type="text" formControlName="article" placeholder="Article"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Ligne</ion-label>
+      <ion-select formControlName="ligne">
+        <ion-select-option value="Ligne B">Ligne B</ion-select-option>
+        <ion-select-option value="Ligne C">Ligne C</ion-select-option>
+        <ion-select-option value="Ligne D">Ligne D</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+  </ion-card>
     <ion-card>
       <ion-card-header>
         <ion-card-title>Début production</ion-card-title>
@@ -13,8 +40,8 @@
             </ion-item>
             <div slot="content">
               <ion-item>
-                <ion-label position="floating">Heure</ion-label>
-                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(debutProduction, i, 'heure')" type="time"></ion-input>
+                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(debutProduction, i, 'heure')" type="time"
+                  placeholder="heure"></ion-input>
 
               </ion-item>
               <ion-grid>
@@ -72,11 +99,12 @@
               <ion-label>Controle horaire {{ i + 1 }}</ion-label>
             </ion-item>
             <div slot="content">
-         
+
               <ion-item>
-                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(controleHoraire, i, 'heure')" placeholder="heure" type="time"></ion-input>
+                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(controleHoraire, i, 'heure')"
+                  placeholder="heure" type="time"></ion-input>
               </ion-item>
-          
+
               <ion-grid>
                 <ion-row>
                   <ion-col size="4"></ion-col>
@@ -366,7 +394,7 @@
                         <ion-col>
                           <ion-item lines="none" class="grid-item">
                             <ion-input formControlName="heureEclatement" placeholder="Heure"
-                            (ionBlur)="checkTimeFormat(controle4h, i, 'heureEclatement')" type="time"></ion-input>
+                              (ionBlur)="checkTimeFormat(controle4h, i, 'heureEclatement')" type="time"></ion-input>
                           </ion-item>
                         </ion-col>
                         <ion-col>
@@ -407,15 +435,15 @@
       </ion-card-header>
       <ion-card-content>
         <ion-accordion-group>
-          <ion-accordion *ngFor="let control of finPoste.controls; let i = index"
-            [formGroup]="getFormGroup(control)">
+          <ion-accordion *ngFor="let control of finPoste.controls; let i = index" [formGroup]="getFormGroup(control)">
             <ion-item slot="header">
               <ion-label>Fin de poste {{ i + 1 }}</ion-label>
             </ion-item>
             <div slot="content">
               <ion-item>
                 <ion-label position="floating">Heure</ion-label>
-                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(finPoste, i, 'heure')" type="time"></ion-input>
+                <ion-input formControlName="heure" (ionBlur)="checkTimeFormat(finPoste, i, 'heure')"
+                  type="time"></ion-input>
 
               </ion-item>
               <ion-grid>

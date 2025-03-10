@@ -1,0 +1,22 @@
+<ion-item >
+  <ion-label>
+    <p>N°Of: {{ productOf.numeroOf }}</p>
+    <p>N°lot: {{ productOf.numeroLot }}</p>
+
+  </ion-label>
+
+  <ion-label >
+    <ion-icon name="document-text-outline"></ion-icon>
+  </ion-label>
+
+  <ion-label >
+    <ion-icon name="pencil-outline"></ion-icon>
+  </ion-label>
+  
+
+  <ion-label>
+    <ion-icon name="close-circle-outline" name="close-circle-outline" (click)="presentAlert(productOf)"
+      class="icon-right"></ion-icon>
+  </ion-label>
+
+</ion-item>

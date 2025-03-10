@@ -12,18 +12,23 @@ import {
 import { LigneTypeEnum } from './ligne-type-enum';
 
 export class ProdOfDto {
-  @IsNumber()
-  numeroOf!: number;
 
-  @IsString()
-  numeroLot!: string;
+    @IsNumber()
+    numeroOf!: number;
+  
+    @IsString()
+    numeroLot!: string;
+  
+    @IsString()
+    article!: string;
+  
+    @IsEnum(LigneTypeEnum)
+    ligne!: LigneTypeEnum;
 
-  @IsString()
-  article!: string;
 
-  @IsEnum(LigneTypeEnum)
-  ligne!: LigneTypeEnum;
 
+
+    
   @IsArray()
   @IsOptional()
   readonly debutProduction: DebutProductionDTO[];

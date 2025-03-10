@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -7,6 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
+import { ProductOf } from 'src/app/core/Types/productOf-class.ts/productOf-class';
 import { decimalValidator } from 'src/app/core/utils/decimalValidator';
 import { timeValidator } from 'src/app/core/utils/timeValidators';
 
@@ -17,8 +18,13 @@ import { timeValidator } from 'src/app/core/utils/timeValidators';
   standalone: false,
 })
 export class NewOfComponent implements OnInit {
+
+  @Input()
+  productOf!: ProductOf
+
   newOf: FormGroup = new FormGroup({});
 
+  
   constructor(
     private _formBuilder: FormBuilder,
     private toastController: ToastController,
@@ -27,6 +33,10 @@ export class NewOfComponent implements OnInit {
 
   ngOnInit() {
     this.newOf = this._formBuilder.group({
+      numeroOf: [this.productOf?.numeroOf, [Validators.required],],
+      numeroLot: [this.productOf?.numeroLot, [Validators.required],],
+      article: [this.productOf?.article, [Validators.required],],
+      ligne: [this.productOf?.ligne, [Validators.required],],
       debutProduction: this._formBuilder.array([]), // Ajout de debutProduction
       controleHoraire: this._formBuilder.array([]),
       controle4h: this._formBuilder.array([]),
