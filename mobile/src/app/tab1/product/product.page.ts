@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NewOfComponent } from './components/new-of/new-of.component';
 import { ModalController } from '@ionic/angular';
-import { ProductOf } from 'src/app/core/Types/productOf-class.ts/productOf-class';
+import { ProductOf } from 'src/app/core/Types/productOf/productOf-class';
 import { Subscription } from 'rxjs';
 import { SelfInformationService } from 'src/app/core/services/self-information.service';
 import { ProductionService } from 'src/app/core/services/production.service';

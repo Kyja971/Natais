@@ -7,7 +7,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
-import { ProductOf } from 'src/app/core/Types/productOf-class.ts/productOf-class';
+import { ProductOf } from 'src/app/core/Types/productOf/productOf-class';
 import { decimalValidator } from 'src/app/core/utils/decimalValidator';
 import { timeValidator } from 'src/app/core/utils/timeValidators';
 

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController, AlertController } from '@ionic/angular';
 import { ProductionService } from 'src/app/core/services/production.service';
-import { ProductOf } from 'src/app/core/Types/productOf-class.ts/productOf-class';
+import { ProductOf } from 'src/app/core/Types/productOf/productOf-class';
 
 @Component({
   selector: 'app-header-product-of',

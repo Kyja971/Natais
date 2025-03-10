@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { ProductOf } from '../Types/productOf-class.ts/productOf-class';
+import { ProductOf } from '../Types/productOf/productOf-class';
 import { BehaviorSubject, Observable, take } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
