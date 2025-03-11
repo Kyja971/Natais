@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ModalController, AlertController } from '@ionic/angular';
 import { ProductionService } from 'src/app/core/services/production.service';
 import { ProductOf } from 'src/app/core/Types/productOf/productOf-class';
+import { NewOfComponent } from 'src/app/tab1/product/components/new-of/new-of.component';
 
 @Component({
   selector: 'app-header-product-of',
@@ -30,13 +31,26 @@ export class HeaderProductOFComponent  implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('voici ce que je vois dans le header', this.productOf)
   }
+
+  async onUpdate(productOf: ProductOf) {
+    const patientModal = await this._modalCtrl.create({
+      component: NewOfComponent,
+      componentProps: {
+        productOf: productOf,
+      },
+      initialBreakpoint: 1,
+      breakpoints: [0, 1]
+    });
+    patientModal.present();
+  }
+
+
 
   async presentAlert(productOf: ProductOf) {
     const alert = await this._alertController.create({
       header: 'Suppression',
-      message: `Êtes vous sur de vouloir supprimer  ?`,
+      message: `Êtes vous sur de vouloir supprimer l'of n° ${productOf.numeroOf}  ?`,
       buttons: [{
         text: "Oui",
         role: "confirm",

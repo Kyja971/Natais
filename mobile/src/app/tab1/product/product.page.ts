@@ -36,9 +36,9 @@ export class ProductPage implements OnInit {
   ngOnInit() {
     this._productService.findAll()
     this._productService.productOf$.subscribe((productsOfs: ProductOf[]) => {
-      console.log('voici ce que je vois dans le productPage', productsOfs)
       this.productOfs = productsOfs;
     })
+    
 
 }
 

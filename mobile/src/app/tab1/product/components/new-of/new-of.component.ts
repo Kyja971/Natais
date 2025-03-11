@@ -7,6 +7,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
+import { plainToClass } from 'class-transformer';
+import { ProductionService } from 'src/app/core/services/production.service';
 import { ProductOf } from 'src/app/core/Types/productOf/productOf-class';
 import { decimalValidator } from 'src/app/core/utils/decimalValidator';
 import { timeValidator } from 'src/app/core/utils/timeValidators';
@@ -18,30 +20,62 @@ import { timeValidator } from 'src/app/core/utils/timeValidators';
   standalone: false,
 })
 export class NewOfComponent implements OnInit {
+  @Input()
+  productOf!: ProductOf;
 
   @Input()
-  productOf!: ProductOf
+  id!: string;
 
   newOf: FormGroup = new FormGroup({});
 
-  
   constructor(
     private _formBuilder: FormBuilder,
     private toastController: ToastController,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private _production: ProductionService
   ) {}
 
   ngOnInit() {
-    this.newOf = this._formBuilder.group({
-      numeroOf: [this.productOf?.numeroOf, [Validators.required],],
-      numeroLot: [this.productOf?.numeroLot, [Validators.required],],
-      article: [this.productOf?.article, [Validators.required],],
-      ligne: [this.productOf?.ligne, [Validators.required],],
-      debutProduction: this._formBuilder.array([]), // Ajout de debutProduction
-      controleHoraire: this._formBuilder.array([]),
-      controle4h: this._formBuilder.array([]),
-      finPoste: this._formBuilder.array([]),
-    });
+    if (this.productOf) {
+      this.newOf = this._formBuilder.group({
+        numeroOf: [this.productOf.numeroOf, [Validators.required]],
+        numeroLot: [this.productOf.numeroLot, [Validators.required]],
+        article: [this.productOf.article, [Validators.required]],
+        ligne: [this.productOf.ligne, [Validators.required]],
+        debutProduction: this._formBuilder.array(
+          this.productOf.debutProduction?.map((debut) =>
+            this.createDebutProductionGroup(debut)
+          ) || []
+        ),
+        controleHoraire: this._formBuilder.array(
+          this.productOf.controleHoraire?.map((ctrl) =>
+            this.createcontroleHoraireGroup(ctrl)
+          ) || []
+        ),
+        controle4h: this._formBuilder.array(
+          this.productOf.controle4h?.map((ctrl) =>
+            this.createControle4hGroup(ctrl)
+          ) || []
+        ),
+        finPoste: this._formBuilder.array(
+          this.productOf.finPoste?.map((fin) =>
+            this.createFinPosteGroup(fin)
+          ) || []
+        ),
+      });
+    } else {
+      this.newOf = this._formBuilder.group({
+        numeroOf: ['', [Validators.required]],
+        numeroLot: ['', [Validators.required]],
+        article: ['', [Validators.required]],
+        ligne: ['', [Validators.required]],
+        debutProduction: this._formBuilder.array([]),
+        controleHoraire: this._formBuilder.array([]),
+        controle4h: this._formBuilder.array([]),
+        finPoste: this._formBuilder.array([]),
+      });
+    }
+    this.cdr.detectChanges();
   }
 
   getFormGroup(control: AbstractControl): FormGroup {
@@ -52,12 +86,21 @@ export class NewOfComponent implements OnInit {
     return this.newOf.get('debutProduction') as FormArray<FormGroup>;
   }
 
-  createDebutProductionGroup() {
+  createDebutProductionGroup(debut?: any) {
+    if (!debut) {
+      // Si fin est undefined, retourner un FormGroup avec des valeurs par défaut
+      return this._formBuilder.group({
+        heure: ['', timeValidator],
+        conforme: [false],
+        nonconforme: [false],
+        commentaires: [''],
+      });
+    }
     return this._formBuilder.group({
-      heure: ['', timeValidator],
-      conforme: [false],
-      nonconforme: [false],
-      commentaires: [''],
+      heure: [debut.heure || '', timeValidator],
+      conforme: [debut.conforme || false],
+      nonconforme: [debut.nonconforme || false],
+      commentaires: [debut.commentaires || ''],
     });
   }
 
@@ -98,6 +141,7 @@ export class NewOfComponent implements OnInit {
   }
 
   async validateDebutProduction(index: number) {
+    const debutProductionArray = this.newOf.get('debutProduction') as FormArray;
     // Récupérer le form group du bloc spécifique
     const control = this.debutProduction.at(index) as FormGroup;
 
@@ -140,6 +184,19 @@ export class NewOfComponent implements OnInit {
         duration: 2000,
         color: 'success',
       });
+
+      // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+      const debutProductionValues = debutProductionArray.controls.map(
+        (group) => group.value
+      );
+
+      // Créer un nouveau payload avec les valeurs extraites
+      const payload = {
+        ...this.newOf.value,
+        debutProduction: debutProductionValues,
+      };
+      this._production.update(this.productOf.id, payload);
+
       toast.present();
     } else {
       const toast = await this.toastController.create({
@@ -161,17 +218,29 @@ export class NewOfComponent implements OnInit {
     return this.newOf.get('controleHoraire') as FormArray<FormGroup>;
   }
 
-  createcontroleHoraireGroup() {
+  createcontroleHoraireGroup(ctrl?: any) {
+    if (!ctrl) {
+      // Si  est undefined, retourner un FormGroup avec des valeurs par défaut
+      return this._formBuilder.group({
+        heure: ['', timeValidator],
+        conformeHoraire: [false],
+        nonconformeHoraire: [false],
+        commentsHoraire: [''],
+      });
+    }
     return this._formBuilder.group({
-      heure: ['', timeValidator],
-      conformeHoraire: [false],
-      nonconformeHoraire: [false],
-      commentsHoraire: [''],
+      heure: [ctrl.heure || '', timeValidator],
+      conformeHoraire: [ctrl.conformeHoraire || false],
+      nonconformeHoraire: [ctrl.nonconformeHoraire || false],
+      commentsHoraire: [ctrl.commentsHoraire || ''],
     });
   }
 
   async addControleHoraire() {
-    if (this.controleHoraire.length === 0 || this.isLastBlockValidControlHoraire()) {
+    if (
+      this.controleHoraire.length === 0 ||
+      this.isLastBlockValidControlHoraire()
+    ) {
       this.controleHoraire.push(this.createcontroleHoraireGroup());
     } else {
       const toast = await this.toastController.create({
@@ -206,6 +275,7 @@ export class NewOfComponent implements OnInit {
   }
 
   async validateControlHoraire(index: number) {
+    const controlHoraireArray = this.newOf.get('controleHoraire') as FormArray;
     // Récupérer le form group du bloc spécifique
     const control = this.controleHoraire.at(index) as FormGroup;
 
@@ -248,6 +318,17 @@ export class NewOfComponent implements OnInit {
         duration: 2000,
         color: 'success',
       });
+         // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+         const controlHoraireValues = controlHoraireArray.controls.map(
+          (group) => group.value
+        );
+  
+        // Créer un nouveau payload avec les valeurs extraites
+        const payload = {
+          ...this.newOf.value,
+          controleHoraire: controlHoraireValues,
+        };
+        this._production.update(this.productOf.id, payload);
       toast.present();
     } else {
       const toast = await this.toastController.create({
@@ -261,7 +342,6 @@ export class NewOfComponent implements OnInit {
     }
   }
 
-
   /**
    *  bloc Contrôle 4h
    */
@@ -272,7 +352,7 @@ export class NewOfComponent implements OnInit {
   }
 
   // Création d'un groupe "Contrôle 4h"
-  createControle4hGroup() {
+  createControle4hGroup(ctrl?: any) {
     return this._formBuilder.group({
       heureMetaux: ['', timeValidator],
       controleMetaux: ['', Validators.required],
@@ -479,9 +559,9 @@ export class NewOfComponent implements OnInit {
     const heure = control.get('heureEclatement');
     const volumeEclatement = control.get('volumeEclatement');
     const maisNonEclates = control.get('maisNonEclates');
-  
-    console.log('voici format de heure', heure);
-  
+
+    //console.log('voici format de heure', heure);
+
     // Vérification de la valeur de heureEclatement
     const heureValue = heure?.value;
     const isHeureValid =
@@ -490,7 +570,7 @@ export class NewOfComponent implements OnInit {
       heureValue !== undefined &&
       heureValue !== '' &&
       heureValue != 0; // Optionnel : Vous pouvez vérifier que l'heure est un nombre positif
-  
+
     if (isHeureValid && volumeEclatement?.valid && maisNonEclates?.valid) {
       this.showToast(`Bloc ${index + 1} Eclatement validé !`, 'success');
     } else {
@@ -498,11 +578,10 @@ export class NewOfComponent implements OnInit {
       if (!isHeureValid) message += `Heure manquante/mauvaise saisie. `;
       if (!volumeEclatement?.valid) message += `Volume manquant. `;
       if (!maisNonEclates?.valid) message += `Mais non éclatés manquant. `;
-  
+
       this.showToast(message.trim(), 'danger');
     }
   }
-  
 
   // Suppression d'un bloc "Contrôle 4h"
   removeControle4h(index: number) {
@@ -589,12 +668,21 @@ export class NewOfComponent implements OnInit {
     return this.newOf.get('finPoste') as FormArray<FormGroup>;
   }
 
-  createFinPosteGroup() {
+  createFinPosteGroup(fin?: any) {
+    if (!fin) {
+      // Si fin est undefined, retourner un FormGroup avec des valeurs par défaut
+      return this._formBuilder.group({
+        heure: ['', timeValidator],
+        conformeMaterielFin: [false],
+        nonconformeMaterielFin: [false],
+        commentsMaterielFin: [''],
+      });
+    }
     return this._formBuilder.group({
-      heure: ['', timeValidator],
-      conformeMaterielFin: [false],
-      nonconformeMaterielFin: [false],
-      commentsMaterielFin: [''],
+      heure: [fin.heure || '', timeValidator],
+      conformeMaterielFin: [fin.conformeMaterielFin || false],
+      nonconformeMaterielFin: [fin.nonconformeMaterielFin || false],
+      commentsMaterielFin: [fin.commentsMaterielFin || ''],
     });
   }
 
@@ -619,9 +707,7 @@ export class NewOfComponent implements OnInit {
       return true; // Si aucun bloc, alors c'est valide
     }
 
-    const lastBlock = this.finPoste.at(
-      this.finPoste.length - 1
-    ) as FormGroup;
+    const lastBlock = this.finPoste.at(this.finPoste.length - 1) as FormGroup;
     const heureControl = lastBlock.get('heure');
     const conformeControl = lastBlock.get('conformeMaterielFin');
     const nonconformeControl = lastBlock.get('nonconformeMaterielFin');
@@ -634,6 +720,7 @@ export class NewOfComponent implements OnInit {
   }
 
   async validateFinPoste(index: number) {
+    const finProdArray = this.newOf.get('finPoste') as FormArray;
     // Récupérer le form group du bloc spécifique
     const control = this.finPoste.at(index) as FormGroup;
 
@@ -676,6 +763,18 @@ export class NewOfComponent implements OnInit {
         duration: 2000,
         color: 'success',
       });
+      // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+      const finProdValues = finProdArray.controls.map((group) => group.value);
+
+      // Créer un nouveau payload avec les valeurs extraites
+      const payload = {
+        ...this.newOf.value,
+        finPoste: finProdValues,
+      };
+      // Utiliser this.newOf.value pour obtenir toutes les valeurs du formulaire
+      //const payload = this.newOf.value;
+      //console.log('voici le truc à update', payload);
+      this._production.update(this.productOf.id, payload);
       toast.present();
     } else {
       const toast = await this.toastController.create({
@@ -688,7 +787,6 @@ export class NewOfComponent implements OnInit {
       toast.present();
     }
   }
-
 
   /**
    * disply immediatly numbers of grid
@@ -715,8 +813,28 @@ export class NewOfComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log(this.newOf.value);
-    // Ajoutez ici la logique pour enregistrer les données
+    //console.log(this.newOf.value);
+    const payload = {
+      numeroOf: this.newOf.value.numeroOf,
+      numeroLot: this.newOf.value.numeroLot,
+      article: this.newOf.value.article,
+      ligne: this.newOf.value.ligne,
+      // Extraire les valeurs de chaque FormArray
+      debutProduction: this.newOf.value.debutProduction.map(
+        (group: any) => group.value
+      ),
+      controleHoraire: this.newOf.value.controleHoraire.map(
+        (group: any) => group.value
+      ),
+      controle4h: this.newOf.value.controle4h.map((group: any) => group.value),
+      finPoste: this.newOf.value.finPoste.map((group: any) => group.value),
+    };
+    if (this.productOf) {
+      //console.log('si produtOf trouvé', this.productOf.id);
+      this._production.update(this.productOf.id, payload);
+    } else {
+      this._production.add(payload);
+    }
   }
 
   /**

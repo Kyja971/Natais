@@ -1,10 +1,12 @@
 <ion-content class="ion-padding">
+  <h2 *ngIf="productOf">Modifier</h2>
+  <h2 *ngIf="!productOf">Ajouter un ordre de Fabrication</h2>
 
-  <form [formGroup]="newOf">
+  <form [formGroup]="newOf" (ngSubmit)="onSubmit()">
     <ion-card>
     <ion-item>
 
-      <ion-input type="text" formControlName="numeroOf" placeholder="Numéro OF"></ion-input>
+      <ion-input type="number" formControlName="numeroOf" placeholder="Numéro OF"></ion-input>
     </ion-item>
   
     <ion-item>
@@ -487,6 +489,6 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-button (click)="onSubmit()" expand="full">Soumettre</ion-button>
+    <ion-button type="submit" [disabled]="newOf.invalid" expand="full">Valider</ion-button>
   </form>
 </ion-content>

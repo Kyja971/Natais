@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProdOfDto } from './dto/prod-of.dto';
 import { UpdateProdOfDto } from './dto/update-prod-of.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,15 +21,36 @@ export class ProdOfService {
     return this._productOfModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} prodOf`;
+  async findOne(productOfId: string): Promise<ProdOfDto | null> {
+    const profile = await this._productOfModel.findOne({ _id: productOfId });
+    if (!profile) {
+      throw new NotFoundException(`ProductOf #${productOfId} not found`);
+    }
+    return profile;
   }
 
-  update(id: number, updateProdOfDto: UpdateProdOfDto) {
-    return `This action updates a #${id} prodOf`;
+  async update(
+    productOfId: string,
+    productOf: UpdateProdOfDto,
+  ): Promise<ProdOfDto | null> {
+    const productOfToUpdate = await this._productOfModel.findByIdAndUpdate(
+      productOfId,
+      productOf,
+    );
+    if (!productOfToUpdate) {
+      throw new NotFoundException(`ProductOf #${productOfId} not found`);
+    } else {
+      return this._productOfModel.findById(productOfId);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} prodOf`;
+  async delete(id: string): Promise<ProdOfDto | null> {
+    const productToDelete = await this._productOfModel.findById(id);
+    if (!productToDelete) {
+      throw new NotFoundException(`ProductOf #${id} not found`);
+    } else {
+      await this._productOfModel.deleteOne({ _id: id });
+      return productToDelete;
+    }
   }
 }

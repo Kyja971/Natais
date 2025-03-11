@@ -18,18 +18,19 @@ export class ProdOfController {
     return this.prodOfService.findAll();
   }
 
-  @Get(':id')
+  @MessagePattern({ cmd: 'findOneProduction'})
   findOne(@Param('id') id: string) {
-    return this.prodOfService.findOne(+id);
+    return this.prodOfService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProdOfDto: UpdateProdOfDto) {
-    return this.prodOfService.update(+id, updateProdOfDto);
+  @MessagePattern({ cmd: 'updateProduction'})
+  update(payload: any): Promise<ProdOfDto | null> {
+    console.log('voici le payload',payload)
+    return this.prodOfService.update(payload.id, payload.updateProduction);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.prodOfService.remove(+id);
+  @MessagePattern({ cmd: 'deleteProduction'})
+  delete(id: string) {
+    return this.prodOfService.delete(id);
   }
 }
