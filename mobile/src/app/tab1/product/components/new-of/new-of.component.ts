@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { plainToClass } from 'class-transformer';
+import { h } from 'ionicons/dist/types/stencil-public-runtime';
 import { ProductionService } from 'src/app/core/services/production.service';
 import { ProductOf } from 'src/app/core/Types/productOf/productOf-class';
 import { decimalValidator } from 'src/app/core/utils/decimalValidator';
@@ -71,21 +72,29 @@ export class NewOfComponent implements OnInit {
         ligne: ['', [Validators.required]],
         debutProduction: this._formBuilder.array([]),
         controleHoraire: this._formBuilder.array([]),
-        controle4h: this._formBuilder.array([]),
+        controle4h: this._formBuilder.array([this.createControle4hGroup()]),
         finPoste: this._formBuilder.array([]),
       });
     }
     this.cdr.detectChanges();
+    //affichage dynamique maxi/mini selon valeur
+    this.controle4h.controls.forEach((group: FormGroup) => {
+      this.setupValueListener(group, 'EtalonnageMais');
+      this.setupValueListener(group, 'EtalonnageHuile');
+      this.setupValueListener(group, 'EtalonnagePoudre');
+    });
   }
 
   getFormGroup(control: AbstractControl): FormGroup {
     return control as FormGroup;
   }
 
+  //récupère le formulaire correspondant dans le html
   get debutProduction() {
     return this.newOf.get('debutProduction') as FormArray<FormGroup>;
   }
 
+  
   createDebutProductionGroup(debut?: any) {
     if (!debut) {
       // Si fin est undefined, retourner un FormGroup avec des valeurs par défaut
@@ -105,7 +114,6 @@ export class NewOfComponent implements OnInit {
   }
 
   async addDebutProduction() {
-    //console.log("j'arrive ici");
     if (this.debutProduction.length === 0 || this.isLastBlockValid()) {
       this.debutProduction.push(this.createDebutProductionGroup());
     } else {
@@ -318,17 +326,17 @@ export class NewOfComponent implements OnInit {
         duration: 2000,
         color: 'success',
       });
-         // Extraire les valeurs du FormArray en tant qu'objets JSON simples
-         const controlHoraireValues = controlHoraireArray.controls.map(
-          (group) => group.value
-        );
-  
-        // Créer un nouveau payload avec les valeurs extraites
-        const payload = {
-          ...this.newOf.value,
-          controleHoraire: controlHoraireValues,
-        };
-        this._production.update(this.productOf.id, payload);
+      // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+      const controlHoraireValues = controlHoraireArray.controls.map(
+        (group) => group.value
+      );
+
+      // Créer un nouveau payload avec les valeurs extraites
+      const payload = {
+        ...this.newOf.value,
+        controleHoraire: controlHoraireValues,
+      };
+      this._production.update(this.productOf.id, payload);
       toast.present();
     } else {
       const toast = await this.toastController.create({
@@ -351,8 +359,9 @@ export class NewOfComponent implements OnInit {
     return this.newOf.get('controle4h') as FormArray<FormGroup>;
   }
 
-  // Création d'un groupe "Contrôle 4h"
-  createControle4hGroup(ctrl?: any) {
+  /*
+   // Création d'un groupe "Contrôle 4h"
+   createControle4hGroup(ctrl?: any) {
     return this._formBuilder.group({
       heureMetaux: ['', timeValidator],
       controleMetaux: ['', Validators.required],
@@ -372,7 +381,119 @@ export class NewOfComponent implements OnInit {
       heureEclatement: ['', timeValidator],
       volumeEclatement: ['', Validators.required],
       maisNonEclates: ['', Validators.required],
+      EtalonnageMaisMin: [''],
+      EtalonnageMaisMax: [''],
+      EtalonnageHuileMin: [''],
+      EtalonnageHuileMax: [''],
+      EtalonnagePoudreMin: [''],
+      EtalonnagePoudreMax: [''],
     });
+  }
+  */
+
+  // Création d'un groupe "Contrôle 4h"
+  createControle4hGroup(ctrl?: any) {
+
+    const createEmptyControls = () => {
+      return this._formBuilder.array(
+        Array(6).fill(null).map(() => this._formBuilder.control(''))
+      );
+    };
+  
+    if (!ctrl) {
+      // Si  est undefined, retourner un FormGroup avec des valeurs par défaut
+      return this._formBuilder.group({
+        heureMetaux: ['', timeValidator],
+        controleMetaux: ['', Validators.required],
+        controleMetaux2: ['', Validators.required],
+        ejectionConforme: [false],
+        ejectionNonConforme: [false],
+        commentEjecNonConforme: [''],
+        heureEtalonnage: ['', timeValidator],
+        heureEjection: ['', timeValidator],
+        EtalonnageMais: ['', Validators.required],
+        EtalonnageHuile: ['', Validators.required],
+        EtalonnagePoudre: ['', Validators.required],
+        prodAvecPoudre: [null],
+        peseeMais_: createEmptyControls(), 
+        peseeHuile_: createEmptyControls(),
+        peseePoudre_: createEmptyControls(),
+        heureEclatement: ['', timeValidator],
+        volumeEclatement: ['', Validators.required],
+        maisNonEclates: ['', Validators.required],
+        EtalonnageMaisMin: [''],
+        EtalonnageMaisMax: [''],
+        EtalonnageHuileMin: [''],
+        EtalonnageHuileMax: [''],
+        EtalonnagePoudreMin: [''],
+        EtalonnagePoudreMax: [''],
+      });
+    }
+    return this._formBuilder.group({
+      heureMetaux: [ctrl.heureMetaux || '', timeValidator],
+      controleMetaux: [ctrl.controleMetaux || '', Validators.required],
+      controleMetaux2: [ctrl.controleMetaux2 || '', Validators.required],
+      ejectionConforme: [ctrl.ejectionConforme || false],
+      ejectionNonConforme: [ctrl.ejectionNonConforme || false],
+      commentEjecNonConforme: [ctrl.commentEjecNonConforme || ''],
+      heureEtalonnage: [ctrl.heureEtalonnage || '', timeValidator],
+      heureEjection: [ctrl.heureEjection || '', timeValidator],
+      EtalonnageMais: [ctrl.EtalonnageMais || '', Validators.required],
+      EtalonnageHuile: [ctrl.EtalonnageHuile || '', Validators.required],
+      EtalonnagePoudre: [ctrl.EtalonnagePoudre || '', Validators.required],
+      prodAvecPoudre: [ctrl.prodAvecPoudre || null],
+      // Initialisation des FormArray avec les valeurs existantes (ou vides)
+      peseeMais_: this._formBuilder.array(
+        ctrl.peseeMais_
+          ? ctrl.peseeMais_.map((val: any) => this._formBuilder.control(val))
+          : []
+      ),
+      peseeHuile_: this._formBuilder.array(
+        ctrl.peseeHuile_
+          ? ctrl.peseeHuile_.map((val: any) => this._formBuilder.control(val))
+          : []
+      ),
+      peseePoudre_: this._formBuilder.array(
+        ctrl.peseePoudre_
+          ? ctrl.peseePoudre_.map((val: any) => this._formBuilder.control(val))
+          : []
+      ),
+      heureEclatement: [ctrl.heureEclatement || '', timeValidator],
+      volumeEclatement: [ctrl.volumeEclatement || '', Validators.required],
+      maisNonEclates: [ctrl.maisNonEclates || '', Validators.required],
+      EtalonnageMaisMin: [''],
+      EtalonnageMaisMax: [''],
+      EtalonnageHuileMin: [''],
+      EtalonnageHuileMax: [''],
+      EtalonnagePoudreMin: [''],
+      EtalonnagePoudreMax: [''],
+    });
+  }
+  
+
+  setupValueListener(group: FormGroup, fieldName: string) {
+    const control = group.get(fieldName);
+    if (control) {
+      control.valueChanges.subscribe((value) => {
+        if (value) {
+          let tolerance = 0.1; // 10% par défaut
+
+          if (fieldName.includes('Huile')) {
+            tolerance = 0.2; // 20% pour l'huile
+          }
+
+          const min = Number(value) * (1 - tolerance);
+          const max = Number(value) * (1 + tolerance);
+
+          group
+            .get(`${fieldName}Min`)
+            ?.setValue(min.toFixed(2), { emitEvent: false });
+          group
+            .get(`${fieldName}Max`)
+            ?.setValue(max.toFixed(2), { emitEvent: false });
+        }
+      });
+    }
   }
 
   initializePesees(index: number): void {
@@ -382,7 +503,7 @@ export class NewOfComponent implements OnInit {
     const pesee2Array = control.get('peseeHuile_') as FormArray;
     const pesee3Array = control.get('peseePoudre_') as FormArray;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 6; i++) {
       pesee1Array.push(this._formBuilder.control('', decimalValidator()));
       pesee2Array.push(this._formBuilder.control('', decimalValidator()));
       pesee3Array.push(this._formBuilder.control('', decimalValidator()));
@@ -406,11 +527,23 @@ export class NewOfComponent implements OnInit {
   }
 
   async validateControleMetaux(index: number) {
+    const controlMetauxArray = this.newOf.get('controle4h') as FormArray;
     const control = this.controle4h.at(index) as FormGroup;
     const heure = control.get('heureMetaux');
     const controleMetaux = control.get('controleMetaux');
 
     if (heure?.valid && controleMetaux?.valid) {
+      // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+      const controlMetauxValues = controlMetauxArray.controls.map(
+        (group) => group.value
+      );
+
+      // Créer un nouveau payload avec les valeurs extraites
+      const payload = {
+        ...this.newOf.value,
+        controle4h: controlMetauxValues,
+      };
+      this._production.update(this.productOf.id, payload);
       this.showToast(`Bloc ${index + 1} Métaux  validé  !`, 'success');
     } else {
       let message = `Bloc ${index + 1} Métaux : `;
@@ -422,6 +555,7 @@ export class NewOfComponent implements OnInit {
   }
 
   async validateControleEjection(index: number) {
+    const controlEjectionArray = this.newOf.get('controle4h') as FormArray;
     const control = this.controle4h.at(index) as FormGroup;
     const heure = control.get('heureEjection');
     const conformeEjection = control.get('ejectionConforme');
@@ -460,6 +594,17 @@ export class NewOfComponent implements OnInit {
         duration: 2000,
         color: 'success',
       });
+      // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+      const controlEjectionValues = controlEjectionArray.controls.map(
+        (group) => group.value
+      );
+
+      // Créer un nouveau payload avec les valeurs extraites
+      const payload = {
+        ...this.newOf.value,
+        controle4h: controlEjectionValues,
+      };
+      this._production.update(this.productOf.id, payload);
       toast.present();
     } else {
       const toast = await this.toastController.create({
@@ -474,7 +619,9 @@ export class NewOfComponent implements OnInit {
   }
 
   async validateEtalonnage(index: number) {
+    const controlEtalonnageArray = this.newOf.get('controle4h') as FormArray;
     const control = this.controle4h.at(index) as FormGroup;
+
     const heure = control.get('heureEtalonnage');
     const etalonnageMais = control.get('EtalonnageMais');
     const etalonnageHuile = control.get('EtalonnageHuile');
@@ -488,57 +635,70 @@ export class NewOfComponent implements OnInit {
     let message = `Bloc ${index + 1} Étalonnage : `;
     let isValid = true;
 
-    // Vérifie si une valeur est 0 ou vide
+    // Fonction utilitaire pour vérifier si une valeur est vide ou égale à 0
     const isEmptyOrZero = (value: any) => !value || Number(value) === 0;
 
-    // Vérifie si un tableau de FormControls contient une valeur égale à 0
+    // Vérifie si un tableau contient une valeur égale à 0
     const isZeroInArray = (formArray: FormArray) =>
       formArray.controls.some((control) => isEmptyOrZero(control.value));
 
-    // Vérifications stockées dans un tableau
+    // Définition des vérifications de base
     const checks = [
       {
         condition: isEmptyOrZero(heure?.value),
         errorMsg: 'Heure manquante ou invalide.',
       },
-      { field: etalonnageMais, errorMsg: 'Résultat maïs manquant.' },
-      { field: etalonnageHuile, errorMsg: 'Résultat huile manquant.' },
       {
-        condition: isZeroInArray(peseeMais),
-        errorMsg: 'Pesée maïs est à 0.',
+        condition: !etalonnageMais?.valid,
+        errorMsg: 'Résultat maïs manquant.',
       },
+      {
+        condition: !etalonnageHuile?.valid,
+        errorMsg: 'Résultat huile manquant.',
+      },
+      { condition: isZeroInArray(peseeMais), errorMsg: 'Pesée maïs est à 0.' },
       {
         condition: isZeroInArray(peseeHuile),
         errorMsg: 'Pesée huile est à 0.',
       },
     ];
 
-    // Vérification supplémentaire si production avec poudre activée
+    // Si production avec poudre, on ajoute des vérifications supplémentaires
     if (prodAvecPoudre) {
-      checks.push({
-        field: etalonnagePoudre,
-        errorMsg: 'Résultat poudre manquant.',
-      });
-      checks.push({
-        condition: isZeroInArray(peseePoudre),
-        errorMsg: 'Pesée poudre est à 0.',
-      });
+      checks.push(
+        {
+          condition: !etalonnagePoudre?.valid,
+          errorMsg: 'Résultat poudre manquant.',
+        },
+        {
+          condition: isZeroInArray(peseePoudre),
+          errorMsg: 'Pesée poudre est à 0.',
+        }
+      );
     }
 
     // Exécution des vérifications
-    for (const check of checks) {
-      if (check.field && !check.field.valid) {
-        isValid = false;
-        message += `${check.errorMsg} `;
-      }
+    checks.forEach((check) => {
       if (check.condition) {
         isValid = false;
         message += `${check.errorMsg} `;
       }
-    }
+    });
 
     // Affichage du résultat
     if (isValid) {
+      // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+      const controlEtalonnageValues = controlEtalonnageArray.controls.map(
+        (group) => group.value
+      );
+
+      // Créer un nouveau payload avec les valeurs extraites
+      const payload = {
+        ...this.newOf.value,
+        controle4h: controlEtalonnageValues,
+      };
+
+      this._production.update(this.productOf.id, payload);
       this.showToast(`Bloc ${index + 1} Étalonnage validé !`, 'success');
     } else {
       this.showToast(message.trim(), 'danger');
@@ -556,11 +716,10 @@ export class NewOfComponent implements OnInit {
 
   async validateEclatement(index: number) {
     const control = this.controle4h.at(index) as FormGroup;
+    const controlEclatementArray = this.newOf.get('controle4h') as FormArray;
     const heure = control.get('heureEclatement');
     const volumeEclatement = control.get('volumeEclatement');
     const maisNonEclates = control.get('maisNonEclates');
-
-    //console.log('voici format de heure', heure);
 
     // Vérification de la valeur de heureEclatement
     const heureValue = heure?.value;
@@ -572,6 +731,18 @@ export class NewOfComponent implements OnInit {
       heureValue != 0; // Optionnel : Vous pouvez vérifier que l'heure est un nombre positif
 
     if (isHeureValid && volumeEclatement?.valid && maisNonEclates?.valid) {
+      // Extraire les valeurs du FormArray en tant qu'objets JSON simples
+      const controlEclatementValues = controlEclatementArray.controls.map(
+        (group) => group.value
+      );
+
+      // Créer un nouveau payload avec les valeurs extraites
+      const payload = {
+        ...this.newOf.value,
+        controle4h: controlEclatementValues,
+      };
+
+      this._production.update(this.productOf.id, payload);
       this.showToast(`Bloc ${index + 1} Eclatement validé !`, 'success');
     } else {
       let message = `Bloc ${index + 1} Éclatement : `;
@@ -772,8 +943,7 @@ export class NewOfComponent implements OnInit {
         finPoste: finProdValues,
       };
       // Utiliser this.newOf.value pour obtenir toutes les valeurs du formulaire
-      //const payload = this.newOf.value;
-      //console.log('voici le truc à update', payload);
+
       this._production.update(this.productOf.id, payload);
       toast.present();
     } else {
@@ -807,13 +977,12 @@ export class NewOfComponent implements OnInit {
   }
 
   generateRows(): any[] {
-    return Array(10)
+    return Array(6)
       .fill(0)
       .map((_, index) => index);
   }
 
   onSubmit() {
-    //console.log(this.newOf.value);
     const payload = {
       numeroOf: this.newOf.value.numeroOf,
       numeroLot: this.newOf.value.numeroLot,
@@ -830,7 +999,6 @@ export class NewOfComponent implements OnInit {
       finPoste: this.newOf.value.finPoste.map((group: any) => group.value),
     };
     if (this.productOf) {
-      //console.log('si produtOf trouvé', this.productOf.id);
       this._production.update(this.productOf.id, payload);
     } else {
       this._production.add(payload);

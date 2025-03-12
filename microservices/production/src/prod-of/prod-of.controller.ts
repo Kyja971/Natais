@@ -25,7 +25,6 @@ export class ProdOfController {
 
   @MessagePattern({ cmd: 'updateProduction'})
   update(payload: any): Promise<ProdOfDto | null> {
-    console.log('voici le payload',payload)
     return this.prodOfService.update(payload.id, payload.updateProduction);
   }
 

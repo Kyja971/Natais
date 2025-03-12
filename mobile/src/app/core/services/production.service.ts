@@ -31,13 +31,18 @@ export class ProductionService {
   }
 
   add(productOf: any) {
-    this._httpClient.post<ProductOf>(this.URI, productOf)
+    this._httpClient
+      .post<ProductOf>(this.URI, productOf)
       .pipe(take(1))
       .subscribe((response: ProductOf) => {
-        // Convertir la réponse en instance de Patient
         const newProductOf = plainToInstance(ProductOf, response);
 
-        this._modalController.dismiss(newProductOf); // Passer la nouvelle instance de Post si nécessaire
+        // Mettre à jour le BehaviorSubject
+        const currentProductOfs = this.productOfsSubject.getValue();
+        const updatedList = [...currentProductOfs, newProductOf]; // Ajouter le nouveau ProductOf
+        this.productOfsSubject.next(updatedList);
+        
+        this._modalController.dismiss(newProductOf);
       });
   }
 

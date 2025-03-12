@@ -236,13 +236,52 @@
                       <ion-input formControlName="heureEtalonnage" placeholder="Heure contrôle"
                         (ionBlur)="checkTimeFormat(controle4h, i, 'heureEtalonnage')" type="time"></ion-input>
                     </ion-item>
+                    <div>
+                      <ion-grid class="etalonnage-grid">
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell"></ion-col>
+                          <ion-col class="grid-cell header-cell">Cible</ion-col>
+                          <ion-col class="grid-cell header-cell">Mini</ion-col>
+                          <ion-col class="grid-cell header-cell">Maxi</ion-col>
+                        </ion-row>
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Maïs</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnageMais" placeholder="Valeur"></ion-input>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnageMaisMin" readonly></ion-input>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnageMaisMax" readonly></ion-input>
+                          </ion-col>
+                        </ion-row>
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Huile</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnageHuile" placeholder="Valeur"></ion-input>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnageHuileMin" readonly></ion-input>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnageHuileMax"></ion-input>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </div>
+                    <!--
                     <ion-item>
                       <ion-input formControlName="EtalonnageMais" placeholder="Dosage Maïs"></ion-input>
                     </ion-item>
                     <ion-item>
                       <ion-input formControlName="EtalonnageHuile" placeholder="Dosage huile"></ion-input>
                     </ion-item>
-
+                     -->
                     <ion-item>
                       <ion-label>Production avec poudre ?</ion-label>
                       <ion-toggle formControlName="prodAvecPoudre"></ion-toggle>
@@ -315,9 +354,33 @@
 
                     <!-- Grid pour poudre (s'affiche si "Oui" est sélectionné) -->
                     <div *ngIf="controle4h.at(i).get('prodAvecPoudre')?.value" class="grid-container">
+                      <ion-grid>
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell"></ion-col>
+                          <ion-col class="grid-cell header-cell">Cible</ion-col>
+                          <ion-col class="grid-cell header-cell">Mini</ion-col>
+                          <ion-col class="grid-cell header-cell">Maxi</ion-col>
+                        </ion-row>
+                        <ion-row>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>Poudre</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnagePoudre" placeholder="Dosage Poudre"></ion-input>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnagePoudreMin" readonly></ion-input>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-input type="decimal" valeur="0.00" formControlName="EtalonnagePoudreMax" readonly></ion-input>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                      <!--
                       <ion-item>
                         <ion-input formControlName="EtalonnagePoudre" placeholder="Dosage Poudre"></ion-input>
                       </ion-item>
+                        -->
                       <ion-grid formArrayName="peseePoudre_">
                         <ion-row>
                           <ion-col class="grid-cell header-cell"></ion-col>
@@ -347,6 +410,7 @@
                             </ion-item>
                           </ion-col>
                         </ion-row>
+               
                       </ion-grid>
                     </div>
 
@@ -370,14 +434,20 @@
                           <ion-col class="grid-cell header-cell">
                             <ion-label>Entre 58 et 80gr</ion-label>
                           </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>PNR peu importe la quantité</ion-label>
+                          </ion-col>
                         </ion-row>
                         <ion-row>
                           <ion-col class="grid-cell header-cell">Volume</ion-col>
                           <ion-col class="grid-cell header-cell">
-                            <ion-label>1600</ion-label>
+                            <ion-label> >1600 ml</ion-label>
                           </ion-col>
                           <ion-col class="grid-cell header-cell">
-                            <ion-label>2000</ion-label>
+                            <ion-label> >2000 ml</ion-label>
+                          </ion-col>
+                          <ion-col class="grid-cell header-cell">
+                            <ion-label>>1500 ml</ion-label>
                           </ion-col>
                         </ion-row>
                       </ion-grid>
@@ -484,11 +554,11 @@
             </div>
           </ion-accordion>
         </ion-accordion-group>
-        <!-- Bouton Ajouter doit être bien en dehors de la boucle *ngFor pour rester visible -->
+
         <ion-button (click)="addFinPoste()" color="primary">Ajouter</ion-button>
       </ion-card-content>
     </ion-card>
 
-    <ion-button type="submit" [disabled]="newOf.invalid" expand="full">Valider</ion-button>
+    <ion-button type="submit"  expand="full">Valider</ion-button>
   </form>
 </ion-content>

@@ -11,7 +11,6 @@ export class ProductionController {
 
   @Post()
   add(@Body() production: ProdOfDto):Observable<ProdOfDto> {
-    console.log('voici le payload', production)
     return this.productionService.add(production).pipe((take(1)));
   }
 

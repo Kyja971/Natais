@@ -65,10 +65,8 @@ export class AppService {
     // Check if the mail is present in the database
     return this._repository.findOne({ where: { email: body.email } })
       .then(async (user: AuthEntity) => {
-        console.log('voici pwd', user)
         // Compare the entered password to the database one
         const pwd = await comparePaswrd(body.password, user.password);
-        console.log('voici pwd', pwd)
         if (pwd) {
           // If both passwords are the same then we can build the payload 
           let pattern = { cmd: 'findOneByMail' };
